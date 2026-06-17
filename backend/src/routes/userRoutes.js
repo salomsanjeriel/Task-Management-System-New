@@ -14,9 +14,12 @@ import { authorize } from '../middleware/authorize.js';
 const router = express.Router();
 
 router.use(authenticate);
-router.use(authorize('admin'));
 
-router.get('/', getUsers);
+// Allow get users for both admin and project manager
+router.get('/', authorize('admin', 'project_manager'), getUsers);
+
+// Rest of user routes are admin-only
+router.use(authorize('admin'));
 router.post('/', createUser);
 router.get('/:id', getUserById);
 router.put('/:id', updateUser);
