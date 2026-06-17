@@ -4,8 +4,8 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-// import { initSocket } from './src/sockets/socketHandler.js';
-// import { startDeadlineChecker } from './src/utils/deadlineChecker.js';
+import { initSocket } from './src/sockets/socketHandler.js';
+import { startDeadlineChecker } from './src/utils/deadlineChecker.js';
 
 dotenv.config();
 
@@ -22,8 +22,8 @@ const io = new Server(httpServer, {
 });
 
 
-// initSocket(io);
-// startDeadlineChecker(io);
+initSocket(io);
+startDeadlineChecker(io);
 
 app.set('io', io);
 
@@ -33,15 +33,15 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 
 
-// import authRoutes from './src/routes/authRoutes.js';
-// import userRoutes from './src/routes/userRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
 import taskRoutes from './src/routes/taskRoutes.js';
-// import notificationRoutes from './src/routes/notificationRoutes.js';
+import notificationRoutes from './src/routes/notificationRoutes.js';
 
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
-// app.use('/api/notifications', notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 app.get('/', (req, res) => {
@@ -61,4 +61,4 @@ const PORT = process.env.PORT || 5000;
 
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
+});
