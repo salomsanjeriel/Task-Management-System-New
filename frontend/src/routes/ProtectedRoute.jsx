@@ -2,8 +2,8 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 
-export function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+export function ProtectedRoute({ children, allowPasswordReset = false }) {
+  const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
     return <LoadingSpinner fullPage label="Loading..." />;
@@ -11,6 +11,10 @@ export function ProtectedRoute({ children }) {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (user?.must_reset_password && !allowPasswordReset) {
+    return <Navigate to="/reset-password" replace />;
   }
 
   return children;

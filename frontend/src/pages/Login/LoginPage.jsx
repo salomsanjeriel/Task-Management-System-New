@@ -39,8 +39,12 @@ export default function LoginPage() {
     setLoading(true);
     try {
       // Standard Login
-      await login(email, password);
-      navigate('/dashboard');
+      const res = await login(email, password);
+      if (res.mustResetPassword) {
+        navigate('/reset-password');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
     } finally {

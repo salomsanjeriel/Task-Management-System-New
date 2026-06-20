@@ -27,17 +27,27 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     const response = await authService.login(email, password);
-    const { token: newToken, user: userData } = response.data;
+    const { token: newToken, user: userData, must_reset_password } = response.data;
+    const fullUser = { ...userData, must_reset_password };
 
     setToken(newToken);
-    setUser(userData);
+    setUser(fullUser);
     localStorage.setItem('taskflow_token', newToken);
-    localStorage.setItem('taskflow_user', JSON.stringify(userData));
+    localStorage.setItem('taskflow_user', JSON.stringify(fullUser));
 
     // Connect socket after login
     socketService.connect(newToken);
 
-    return { success: true };
+    return { success: true, mustResetPassword: must_reset_password };
+  }, []);
+
+  const completePasswordReset = useCallback(() => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated = { ...prev, must_reset_password: false };
+      localStorage.setItem('taskflow_user', JSON.stringify(updated));
+      return updated;
+    });
   }, []);
 
   const logout = useCallback(() => {
@@ -65,6 +75,7 @@ export function AuthProvider({ children }) {
         isCollaborator,
         login,
         logout,
+        completePasswordReset,
       }}
     >
       {children}

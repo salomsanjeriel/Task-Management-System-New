@@ -9,12 +9,23 @@ import TaskFormPage from '../pages/TaskForm/TaskFormPage';
 import UserManagementPage from '../pages/UserManagement/UserManagementPage';
 import NotificationsPage from '../pages/Notifications/NotificationsPage';
 import SettingsPage from '../pages/Settings/SettingsPage';
+import ResetPasswordPage from '../pages/ResetPassword/ResetPasswordPage';
 
 export default function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Force Password Reset Route */}
+      <Route
+        path="/reset-password"
+        element={
+          <ProtectedRoute allowPasswordReset={true}>
+            <ResetPasswordPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Protected — inside MainLayout */}
       <Route
