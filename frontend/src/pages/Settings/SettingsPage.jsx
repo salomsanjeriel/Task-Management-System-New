@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { authService } from '../../services/authService';
 import styles from './SettingsPage.module.css';
 
 export default function SettingsPage() {
@@ -20,6 +21,7 @@ export default function SettingsPage() {
 
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   const handleProfileSave = (e) => {
     e.preventDefault();
@@ -27,14 +29,34 @@ export default function SettingsPage() {
     setTimeout(() => setProfileSuccess(false), 3000);
   };
 
-  const handlePasswordSave = (e) => {
+  const handlePasswordSave = async (e) => {
     e.preventDefault();
-    if (passwords.newPassword !== passwords.confirm) {
+    setPasswordError('');
+
+    if (passwords.newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters long.');
       return;
     }
-    setPasswordSuccess(true);
-    setPasswords({ current: '', newPassword: '', confirm: '' });
-    setTimeout(() => setPasswordSuccess(false), 3000);
+
+    const complexityRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
+    if (!complexityRegex.test(passwords.newPassword)) {
+      setPasswordError('Password must contain at least one uppercase letter, one number, and one special character (!@#$%^&*).');
+      return;
+    }
+
+    if (passwords.newPassword !== passwords.confirm) {
+      setPasswordError('New password and confirm password do not match.');
+      return;
+    }
+
+    try {
+      await authService.resetPassword(passwords.newPassword);
+      setPasswordSuccess(true);
+      setPasswords({ current: '', newPassword: '', confirm: '' });
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch (err) {
+      setPasswordError(err.response?.data?.message || 'Failed to change password. Make sure your current session is valid.');
+    }
   };
 
   return (
@@ -124,6 +146,11 @@ export default function SettingsPage() {
         <h2 className={styles.sectionTitle}>🔒 Change Password</h2>
         {passwordSuccess && (
           <div className={styles.successMsg}>✅ Password changed successfully!</div>
+        )}
+        {passwordError && (
+          <div className={styles.errorMsg} style={{ color: '#e53e3e', background: '#fff5f5', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
+            ❌ {passwordError}
+          </div>
         )}
         <form className={styles.form} onSubmit={handlePasswordSave}>
           <div className={styles.fieldGroup}>
