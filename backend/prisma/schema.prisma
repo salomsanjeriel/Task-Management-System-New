@@ -19,11 +19,11 @@ model User {
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 
-  tasks_created Task[]           @relation("CreatedBy")
-  projects_created Project[]     @relation("ProjectCreator")
-  assignments   TaskAssignment[]
-  comments      Comment[]
-  attachments   Attachment[]
+  tasks_created   Task[]           @relation("CreatedBy")
+  projects_created Project[]       @relation("ProjectCreator")
+  assignments     TaskAssignment[]
+  comments        Comment[]
+  attachments     Attachment[]
 }
 
 enum Role {
@@ -40,8 +40,8 @@ model Project {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  creator     User     @relation("ProjectCreator", fields: [created_by], references: [id])
-  tasks       Task[]
+  creator User   @relation("ProjectCreator", fields: [created_by], references: [id])
+  tasks   Task[]
 }
 
 model Task {
