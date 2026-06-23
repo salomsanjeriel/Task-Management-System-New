@@ -12,8 +12,6 @@ import UserManagementPage from '../pages/UserManagement/UserManagementPage';
 import NotificationsPage from '../pages/Notifications/NotificationsPage';
 import SettingsPage from '../pages/Settings/SettingsPage';
 import ResetPasswordPage from '../pages/ResetPassword/ResetPasswordPage';
-import ProjectsPage from '../pages/Projects/ProjectsPage';
-import ProjectFormPage from '../pages/ProjectForm/ProjectFormPage';
 
 export default function AppRoutes() {
   return (
@@ -40,9 +38,6 @@ export default function AppRoutes() {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/projects/create" element={<ProjectFormPage />} />
-        <Route path="/projects/edit/:id" element={<ProjectFormPage />} />
         <Route path="/tasks" element={<TasksPage />} />
         <Route path="/tasks/create" element={<TaskFormPage />} />
         <Route path="/tasks/edit/:id" element={<TaskFormPage />} />
