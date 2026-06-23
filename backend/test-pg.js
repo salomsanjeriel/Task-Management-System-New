@@ -1,6 +1,6 @@
 import pg from 'pg';
 
-const url = "postgresql://postgres.clqxzwvaqnhsvupzvykq:MySimplePassword123TMS@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres";
+const url = "postgresql://postgres.clqxzwvaqnhsvupzvykq:MySimplePassword123TMS@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true";
 
 const pool = new pg.Pool({
   connectionString: url,
@@ -10,9 +10,9 @@ const pool = new pg.Pool({
 async function main() {
   try {
     const res = await pool.query('SELECT NOW()');
-    console.log("Success 5432 pooler:", res.rows);
+    console.log("Success 6543 pooler:", res.rows);
   } catch (e) {
-    console.error("Error 5432 pooler:", e);
+    console.error("Error 6543 pooler:", e);
   }
   pool.end();
 }
