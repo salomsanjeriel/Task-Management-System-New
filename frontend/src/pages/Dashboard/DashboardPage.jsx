@@ -234,21 +234,27 @@ export default function DashboardPage() {
       ) : (
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className={styles.board}>
-            <KanbanColumn
-              title="To Do"
-              tasks={filterTasks(columns.todo)}
-              droppableId="todo"
-            />
-            <KanbanColumn
-              title="In Progress"
-              tasks={filterTasks(columns.inprogress)}
-              droppableId="inprogress"
-            />
-            <KanbanColumn
-              title="Completed"
-              tasks={filterTasks(columns.completed)}
-              droppableId="completed"
-            />
+            {(statusFilter === 'All' || statusFilter === 'To Do') && (
+              <KanbanColumn
+                title="To Do"
+                tasks={filterTasks(columns.todo)}
+                droppableId="todo"
+              />
+            )}
+            {(statusFilter === 'All' || statusFilter === 'In Progress') && (
+              <KanbanColumn
+                title="In Progress"
+                tasks={filterTasks(columns.inprogress)}
+                droppableId="inprogress"
+              />
+            )}
+            {(statusFilter === 'All' || statusFilter === 'Completed') && (
+              <KanbanColumn
+                title="Completed"
+                tasks={filterTasks(columns.completed)}
+                droppableId="completed"
+              />
+            )}
           </div>
         </DragDropContext>
       )}
