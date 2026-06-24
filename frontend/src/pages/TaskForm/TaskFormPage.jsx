@@ -49,7 +49,6 @@ export default function TaskFormPage() {
     assigneeId: '',
     projectId: '',
   });
-  const [projects, setProjects] = useState([]);
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -335,22 +334,6 @@ export default function TaskFormPage() {
               </select>
               {errors.projectId && <span className={styles.fieldError}>{errors.projectId}</span>}
             </div>
-          </div>
-
-          <div className={styles.fieldGroup}>
-            <label className={styles.label} htmlFor="task-project">Project</label>
-            <select
-              id="task-project"
-              className={styles.select}
-              value={form.projectId}
-              onChange={(e) => handleChange('projectId', e.target.value)}
-              disabled={isCollaborator}
-            >
-              <option value="">No Project (Standalone Task)</option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
           </div>
 
           <div className={styles.actions}>

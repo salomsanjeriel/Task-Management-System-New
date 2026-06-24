@@ -10,26 +10,55 @@ import { sendProjectAssignmentEmail } from '../utils/emailHelper.js';
 // GET /api/projects - Get all projects
 export const getProjects = async (req, res) => {
   try {
-    let projects;
+    const { status, search } = req.query;
     
-    if (req.user.role === 'admin') {
-      projects = await prisma.project.findMany({
-        include: { creator: true, _count: { select: { tasks: true } } },
-        orderBy: { created_at: 'desc' },
-      });
-    } else if (req.user.role === 'project_manager') {
-      projects = await prisma.project.findMany({
-        where: { manager_id: req.user.userId },
-        include: { creator: true, _count: { select: { tasks: true } } },
-        orderBy: { created_at: 'desc' },
-      });
-    } else {
+    let whereClause = {
+      ...(status && { status }),
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
+
+    if (req.user.role === 'project_manager') {
+      whereClause.manager_id = req.user.userId;
+    } else if (req.user.role !== 'admin') {
       // Collaborator sees projects they are assigned to via tasks
       const tasks = await prisma.task.findMany({
         where: { assignments: { some: { user_id: req.user.userId } }, project_id: { not: null } },
         select: { project_id: true }
       });
       const projectIds = [...new Set(tasks.map(t => t.project_id))];
+      whereClause.id = { in: projectIds };
+    }
+
+    const projects = await prisma.project.findMany({
+      where: whereClause,
+      include: {
+        creator: true,
+        manager: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        tasks: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    const projectsWithStats = projects.map((project) => {
+      const totalTasks = project.tasks.length;
+      const completedTasks = project.tasks.filter((t) => t.status === 'completed').length;
+      const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
       
       const { tasks, ...rest } = project;
       return {
@@ -81,10 +110,6 @@ export const getProjectById = async (req, res) => {
     // Role-based access control
     if (req.user.role === 'project_manager' && project.manager_id !== req.user.userId) {
       return res.status(403).json({ errorCode: 'FORBIDDEN', message: 'You do not have access to this project' });
-      return res.status(404).json({
-        errorCode: 'NOT_FOUND',
-        message: 'Project not found',
-      });
     }
 
     const totalTasks = project.tasks.length;
@@ -180,6 +205,8 @@ export const updateProject = async (req, res) => {
 
     if (req.user.role === 'project_manager' && existingProject.manager_id !== req.user.userId) {
       return res.status(403).json({ errorCode: 'FORBIDDEN', message: 'You do not have permission to edit this project' });
+    }
+    
     let managerUser = null;
     if (manager_id) {
       managerUser = await prisma.user.findUnique({ where: { id: manager_id } });
