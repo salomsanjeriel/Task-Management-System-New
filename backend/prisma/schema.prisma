@@ -35,12 +35,7 @@ model Project {
   updated_at  DateTime @updatedAt
   status      String   @default("active")
 
-  creator User @relation(
-    "ProjectCreator",
-    fields: [manager_id],
-    references: [id],
-    map: "Project_created_by_fkey"
-  )
+  creator User @relation("ProjectCreator", fields: [manager_id], references: [id], map: "Project_created_by_fkey")
 
   tasks Task[]
 }
