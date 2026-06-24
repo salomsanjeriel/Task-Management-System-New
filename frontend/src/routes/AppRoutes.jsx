@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
-import { ProtectedRoute, AdminRoute, ManagerRoute } from './ProtectedRoute';
+import { ProtectedRoute, AdminRoute, ManagerRoute, TaskRoute } from './ProtectedRoute';
 
 import LoginPage from '../pages/Login/LoginPage';
 import DashboardPage from '../pages/Dashboard/DashboardPage';
@@ -38,9 +38,30 @@ export default function AppRoutes() {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/tasks/create" element={<TaskFormPage />} />
-        <Route path="/tasks/edit/:id" element={<TaskFormPage />} />
+        <Route
+          path="/tasks"
+          element={
+            <TaskRoute>
+              <TasksPage />
+            </TaskRoute>
+          }
+        />
+        <Route
+          path="/tasks/create"
+          element={
+            <ManagerRoute>
+              <TaskFormPage />
+            </ManagerRoute>
+          }
+        />
+        <Route
+          path="/tasks/edit/:id"
+          element={
+            <ManagerRoute>
+              <TaskFormPage />
+            </ManagerRoute>
+          }
+        />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
 
@@ -54,7 +75,7 @@ export default function AppRoutes() {
           }
         />
 
-        {/* Manager & Admin only */}
+        {/* Manager only */}
         <Route
           path="/projects"
           element={

@@ -24,12 +24,12 @@ router.use(authenticate);
 
 // Task routes
 router.get('/', getTasks);
-router.post('/', authorize('project_manager', 'admin'), createTask);
+router.post('/', authorize('project_manager'), createTask);
 router.get('/:id', getTaskById);
-router.put('/:id', authorize('project_manager', 'admin'), updateTask);
-router.delete('/:id', authorize('project_manager', 'admin'), deleteTask);
-router.patch('/:id/status', updateTaskStatus);
-router.post('/:id/assign', authorize('project_manager', 'admin'), assignTask);
+router.put('/:id', authorize('project_manager'), updateTask);
+router.delete('/:id', authorize('project_manager'), deleteTask);
+router.patch('/:id/status', authorize('project_manager', 'collaborator'), updateTaskStatus);
+router.post('/:id/assign', authorize('project_manager'), assignTask);
 router.post('/:id/comments', addComment);
 router.get('/:id/comments', getComments);
 router.post('/:id/attachments', upload.single('file'), addAttachment);

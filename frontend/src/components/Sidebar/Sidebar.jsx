@@ -4,11 +4,35 @@ import styles from './Sidebar.module.css';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: '📊', label: 'Dashboard' },
-  { to: '/projects', icon: '📁', label: 'Projects', allowedRoles: ['admin', 'project_manager'] },
 
-  { to: '/tasks', icon: '📋', label: 'Tasks' },
-  { to: '/tasks/create', icon: '➕', label: 'Create Task', allowedRoles: ['admin', 'project_manager'] },
-  { to: '/users', icon: '👥', label: 'User Management', allowedRoles: ['admin'] },
+  {
+    to: '/projects',
+    icon: '📁',
+    label: 'Projects',
+    allowedRoles: ['project_manager']
+  },
+
+  {
+    to: '/tasks',
+    icon: '📋',
+    label: 'Tasks',
+    allowedRoles: ['project_manager', 'collaborator']
+  },
+
+  {
+    to: '/tasks/create',
+    icon: '➕',
+    label: 'Create Task',
+    allowedRoles: ['project_manager']
+  },
+
+  {
+    to: '/users',
+    icon: '👥',
+    label: 'User Management',
+    allowedRoles: ['admin']
+  },
+
   { to: '/notifications', icon: '🔔', label: 'Notifications' },
   { to: '/settings', icon: '⚙️', label: 'Settings' },
 ];

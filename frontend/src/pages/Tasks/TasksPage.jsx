@@ -16,7 +16,7 @@ const STATUS_MAP = {
 
 export default function TasksPage() {
   const navigate = useNavigate();
-  const { user, isCollaborator } = useAuth();
+  const { user, isCollaborator, isProjectManager } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -40,7 +40,8 @@ export default function TasksPage() {
         assignee: t.assignments?.[0]?.user?.name || 'Unassigned',
         priority: t.priority === 'low' ? 'Low' : t.priority === 'medium' ? 'Medium' : 'High',
         status: t.status === 'todo' ? 'To Do' : t.status === 'in_progress' ? 'In Progress' : 'Completed',
-        dueDate: t.due_date ? t.due_date.substring(0, 10) : ''
+        dueDate: t.due_date ? t.due_date.substring(0, 10) : '',
+        project: t.project?.name || 'No Project'
       }));
       setTasks(mappedTasks);
       setError('');
@@ -120,7 +121,7 @@ export default function TasksPage() {
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
-          {!isCollaborator && (
+          {isProjectManager && (
             <button className={styles.createBtn} onClick={() => navigate('/tasks/create')} id="create-task-btn">
               ➕ New Task
             </button>
@@ -139,6 +140,7 @@ export default function TasksPage() {
               <thead>
                 <tr>
                   <th>Title</th>
+                  <th>Project</th>
                   <th>Assignee</th>
                   <th>Priority</th>
                   <th>Status</th>
@@ -150,6 +152,7 @@ export default function TasksPage() {
                 {paginated.map((task) => (
                   <tr key={task.id}>
                     <td style={{ fontWeight: 600 }}>{task.title}</td>
+                    <td>{task.project}</td>
                     <td>
                       <div className={styles.assigneeCell}>
                         <div className={styles.assigneeAvatar}>{getInitials(task.assignee)}</div>
@@ -176,7 +179,7 @@ export default function TasksPage() {
                         >
                           ✏️
                         </button>
-                        {!isCollaborator && (
+                        {isProjectManager && (
                           <button
                             className={`${styles.actionBtn} ${styles.delete}`}
                             onClick={() => setDeleteTask(task)}

@@ -10,40 +10,26 @@ import { sendProjectAssignmentEmail } from '../utils/emailHelper.js';
 // GET /api/projects - Get all projects
 export const getProjects = async (req, res) => {
   try {
-    const { status, search } = req.query;
-    const projects = await prisma.project.findMany({
-      where: {
-        ...(status && { status }),
-        ...(search && {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { description: { contains: search, mode: 'insensitive' } },
-          ],
-        }),
-      },
-      include: {
-        manager: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        tasks: {
-          select: {
-            id: true,
-            status: true,
-          },
-        },
-      },
-      orderBy: { created_at: 'desc' },
-    });
-
-    // Compute progress stats for each project
-    const projectsWithStats = projects.map((project) => {
-      const totalTasks = project.tasks.length;
-      const completedTasks = project.tasks.filter((t) => t.status === 'completed').length;
-      const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    let projects;
+    
+    if (req.user.role === 'admin') {
+      projects = await prisma.project.findMany({
+        include: { creator: true, _count: { select: { tasks: true } } },
+        orderBy: { created_at: 'desc' },
+      });
+    } else if (req.user.role === 'project_manager') {
+      projects = await prisma.project.findMany({
+        where: { manager_id: req.user.userId },
+        include: { creator: true, _count: { select: { tasks: true } } },
+        orderBy: { created_at: 'desc' },
+      });
+    } else {
+      // Collaborator sees projects they are assigned to via tasks
+      const tasks = await prisma.task.findMany({
+        where: { assignments: { some: { user_id: req.user.userId } }, project_id: { not: null } },
+        select: { project_id: true }
+      });
+      const projectIds = [...new Set(tasks.map(t => t.project_id))];
       
       const { tasks, ...rest } = project;
       return {
@@ -89,6 +75,12 @@ export const getProjectById = async (req, res) => {
     });
 
     if (!project) {
+      return res.status(404).json({ errorCode: 'NOT_FOUND', message: 'Project not found' });
+    }
+
+    // Role-based access control
+    if (req.user.role === 'project_manager' && project.manager_id !== req.user.userId) {
+      return res.status(403).json({ errorCode: 'FORBIDDEN', message: 'You do not have access to this project' });
       return res.status(404).json({
         errorCode: 'NOT_FOUND',
         message: 'Project not found',
@@ -134,17 +126,7 @@ export const createProject = async (req, res) => {
       data: {
         name,
         description,
-        status: status || 'active',
-        manager_id,
-      },
-      include: {
-        manager: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        manager_id: req.user.userId,
       },
     });
 
@@ -196,6 +178,8 @@ export const updateProject = async (req, res) => {
       });
     }
 
+    if (req.user.role === 'project_manager' && existingProject.manager_id !== req.user.userId) {
+      return res.status(403).json({ errorCode: 'FORBIDDEN', message: 'You do not have permission to edit this project' });
     let managerUser = null;
     if (manager_id) {
       managerUser = await prisma.user.findUnique({ where: { id: manager_id } });
@@ -264,11 +248,23 @@ export const updateProject = async (req, res) => {
 // DELETE /api/projects/:id - Delete a project
 export const deleteProject = async (req, res) => {
   try {
-    const project = await prisma.project.findUnique({ where: { id: req.params.id } });
-    if (!project) {
-      return res.status(404).json({
-        errorCode: 'NOT_FOUND',
-        message: 'Project not found',
+    const existingProject = await prisma.project.findUnique({ 
+      where: { id: req.params.id },
+      include: { _count: { select: { tasks: true } } }
+    });
+
+    if (!existingProject) {
+      return res.status(404).json({ errorCode: 'NOT_FOUND', message: 'Project not found' });
+    }
+
+    if (req.user.role === 'project_manager' && existingProject.manager_id !== req.user.userId) {
+      return res.status(403).json({ errorCode: 'FORBIDDEN', message: 'You do not have permission to delete this project' });
+    }
+
+    if (existingProject._count.tasks > 0) {
+      return res.status(400).json({ 
+        errorCode: 'VALIDATION_ERROR', 
+        message: 'Cannot delete project because it has tasks. Please delete or reassign the tasks first.' 
       });
     }
 

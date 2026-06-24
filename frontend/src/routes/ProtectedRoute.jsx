@@ -39,7 +39,7 @@ export function AdminRoute({ children }) {
 }
 
 export function ManagerRoute({ children }) {
-  const { isAuthenticated, isAdmin, isProjectManager, loading } = useAuth();
+  const { isAuthenticated, isProjectManager, loading } = useAuth();
 
   if (loading) {
     return <LoadingSpinner fullPage label="Loading..." />;
@@ -49,7 +49,25 @@ export function ManagerRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isAdmin && !isProjectManager) {
+  if (!isProjectManager) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}
+
+export function TaskRoute({ children }) {
+  const { isAuthenticated, isProjectManager, isCollaborator, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingSpinner fullPage label="Loading..." />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isProjectManager && !isCollaborator) {
     return <Navigate to="/dashboard" replace />;
   }
 

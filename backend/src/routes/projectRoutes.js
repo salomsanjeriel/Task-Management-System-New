@@ -18,9 +18,9 @@ router.use(authenticate);
 router.get('/', getProjects);
 router.get('/:id', getProjectById);
 
-// Manage projects (restricted to admin and project manager roles)
-router.post('/', authorize('admin', 'project_manager'), createProject);
-router.put('/:id', authorize('admin', 'project_manager'), updateProject);
-router.delete('/:id', authorize('admin', 'project_manager'), deleteProject);
+// Only Project Managers can manage projects
+router.post('/', authorize('project_manager'), createProject);
+router.put('/:id', authorize('project_manager'), updateProject);
+router.delete('/:id', authorize('project_manager'), deleteProject);
 
 export default router;

@@ -49,6 +49,7 @@ export default function TaskFormPage() {
     assigneeId: '',
     projectId: '',
   });
+  const [projects, setProjects] = useState([]);
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -111,6 +112,7 @@ export default function TaskFormPage() {
     if (!form.title.trim()) errs.title = 'Title is required';
     if (!form.dueDate) errs.dueDate = 'Due date is required';
     if (!form.assigneeId) errs.assigneeId = 'Assignee is required';
+    if (!form.projectId) errs.projectId = 'Project is required';
     return errs;
   };
 
@@ -313,6 +315,25 @@ export default function TaskFormPage() {
                 ))}
               </select>
               {errors.assigneeId && <span className={styles.fieldError}>{errors.assigneeId}</span>}
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label className={styles.label} htmlFor="task-project">
+                Project <span className={styles.required}>*</span>
+              </label>
+              <select
+                id="task-project"
+                className={`${styles.select} ${errors.projectId ? styles.error : ''}`}
+                value={form.projectId}
+                onChange={(e) => handleChange('projectId', e.target.value)}
+                disabled={isCollaborator}
+              >
+                <option value="">Select project...</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+              {errors.projectId && <span className={styles.fieldError}>{errors.projectId}</span>}
             </div>
           </div>
 

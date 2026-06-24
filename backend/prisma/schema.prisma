@@ -9,71 +9,59 @@ datasource db {
 }
 
 model User {
-  id                  String   @id @default(uuid())
+  id                  String           @id @default(uuid())
   name                String
-  email               String   @unique
+  email               String           @unique
   password_hash       String
-  role                Role     @default(collaborator)
-  is_active           Boolean  @default(true)
-  must_reset_password Boolean  @default(true)
-  created_at          DateTime @default(now())
-  updated_at          DateTime @updatedAt
+  role                Role             @default(collaborator)
+  is_active           Boolean          @default(true)
+  must_reset_password Boolean          @default(true)
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
 
+  attachments      Attachment[]
+  comments         Comment[]
+  projects_created Project[]        @relation("ProjectCreator")
   tasks_created    Task[]           @relation("CreatedBy")
   assignments      TaskAssignment[]
-  comments         Comment[]
-  attachments      Attachment[]
-  projects_managed Project[]        @relation("ManagedProjects")
-}
-
-enum Role {
-  admin
-  project_manager
-  collaborator
 }
 
 model Project {
   id          String   @id @default(uuid())
   name        String
   description String?
-  status      String   @default("active")
   manager_id  String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  status      String   @default("active")
 
-  manager User   @relation("ManagedProjects", fields: [manager_id], references: [id])
-  tasks   Task[]
+  creator User @relation(
+    "ProjectCreator",
+    fields: [manager_id],
+    references: [id],
+    map: "Project_created_by_fkey"
+  )
+
+  tasks Task[]
 }
 
 model Task {
-  id          String    @id @default(uuid())
+  id          String           @id @default(uuid())
   title       String
   description String?
-  status      Status    @default(todo)
-  priority    Priority  @default(medium)
+  status      Status           @default(todo)
+  priority    Priority         @default(medium)
   due_date    DateTime?
   created_by  String
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
   project_id  String?
 
+  attachments Attachment[]
+  comments    Comment[]
   creator     User             @relation("CreatedBy", fields: [created_by], references: [id])
   project     Project?         @relation(fields: [project_id], references: [id], onDelete: Cascade)
   assignments TaskAssignment[]
-  comments    Comment[]
-  attachments Attachment[]
-}
-
-enum Status {
-  todo
-  in_progress
-  completed
-}
-
-enum Priority {
-  low
-  medium
-  high
 }
 
 model TaskAssignment {
@@ -118,4 +106,22 @@ model Attachment {
 
   task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
+}
+
+enum Role {
+  admin
+  project_manager
+  collaborator
+}
+
+enum Status {
+  todo
+  in_progress
+  completed
+}
+
+enum Priority {
+  low
+  medium
+  high
 }

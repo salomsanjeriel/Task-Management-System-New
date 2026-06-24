@@ -23,7 +23,7 @@ export const getTasks = async (req, res) => {
       include: { 
         assignments: { include: { user: true } }, 
         creator: true,
-        project: true
+        project: { select: { id: true, name: true } }
       },
       orderBy: { created_at: 'desc' },
     });
@@ -45,6 +45,13 @@ export const createTask = async (req, res) => {
       });
     }
 
+    if (!project_id) {
+      return res.status(400).json({ 
+        errorCode: 'VALIDATION_ERROR', 
+        message: 'Project selection is required' 
+      });
+    }
+
     if (due_date && new Date(due_date) < new Date()) {
       return res.status(400).json({ 
         errorCode: 'VALIDATION_ERROR', 
@@ -62,7 +69,7 @@ export const createTask = async (req, res) => {
         priority,
         due_date: due_date ? new Date(due_date) : null,
         created_by: req.user.userId,
-        project_id: project_id || null,
+        project_id,
         assignments: assignee_ids?.length
           ? { create: assignee_ids.map(uid => ({ user_id: uid })) }
           : undefined,
@@ -129,7 +136,7 @@ export const getTaskById = async (req, res) => {
       include: { 
         assignments: { include: { user: true } }, 
         comments: { include: { user: true } }, 
-        project: true
+        project: { select: { id: true, name: true } }
       },
     });
 

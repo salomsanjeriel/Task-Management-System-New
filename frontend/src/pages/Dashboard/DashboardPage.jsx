@@ -74,6 +74,7 @@ export default function DashboardPage() {
   useSocket('task:deleted', fetchDashboardTasks);
 
   const handleDragEnd = async (result) => {
+    if (isAdmin) return; // Admins are read-only
     const { source, destination } = result;
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;

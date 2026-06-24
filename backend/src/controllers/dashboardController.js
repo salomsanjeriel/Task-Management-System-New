@@ -18,7 +18,7 @@ export const getDashboardStats = async (req, res) => {
       stats = { totalUsers, activeUsers, totalProjects, totalTasks };
     } else if (role === 'project_manager') {
       const [managedProjects, pendingTasks, completedTasks] = await Promise.all([
-        prisma.project.count({ where: { created_by: userId } }),
+        prisma.project.count({ where: { manager_id: userId } }),
         prisma.task.count({ where: { created_by: userId, status: { in: ['todo', 'in_progress'] } } }),
         prisma.task.count({ where: { created_by: userId, status: 'completed' } })
       ]);
