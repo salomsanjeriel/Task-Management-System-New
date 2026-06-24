@@ -37,8 +37,7 @@ export const getProjects = async (req, res) => {
     const projects = await prisma.project.findMany({
       where: whereClause,
       include: {
-        creator: true,
-        manager: {
+        creator: {
           select: {
             id: true,
             name: true,
@@ -60,9 +59,10 @@ export const getProjects = async (req, res) => {
       const completedTasks = project.tasks.filter((t) => t.status === 'completed').length;
       const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
       
-      const { tasks, ...rest } = project;
+      const { tasks, creator, ...rest } = project;
       return {
         ...rest,
+        manager: creator,
         totalTasks,
         completedTasks,
         progress,
@@ -81,7 +81,7 @@ export const getProjectById = async (req, res) => {
     const project = await prisma.project.findUnique({
       where: { id: req.params.id },
       include: {
-        manager: {
+        creator: {
           select: {
             id: true,
             name: true,
@@ -116,8 +116,12 @@ export const getProjectById = async (req, res) => {
     const completedTasks = project.tasks.filter((t) => t.status === 'completed').length;
     const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
+    const { tasks, creator, ...rest } = project;
+
     res.json({
-      ...project,
+      ...rest,
+      manager: creator,
+      tasks,
       totalTasks,
       completedTasks,
       progress,
@@ -227,7 +231,7 @@ export const updateProject = async (req, res) => {
         manager_id,
       },
       include: {
-        manager: {
+        creator: {
           select: {
             id: true,
             name: true,
@@ -264,9 +268,12 @@ export const updateProject = async (req, res) => {
       }
     }
 
-    broadcastProjectUpdated(io, project);
+    const { creator, ...rest } = project;
+    const projectResponse = { ...rest, manager: creator };
 
-    res.json(project);
+    broadcastProjectUpdated(io, projectResponse);
+
+    res.json(projectResponse);
   } catch (error) {
     res.status(500).json({ errorCode: 'SERVER_ERROR', message: error.message });
   }
