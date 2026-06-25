@@ -276,8 +276,8 @@ export default function UserManagementPage() {
                 <button type="button" className={styles.cancelBtn} onClick={() => setIsModalOpen(false)}>
                   Cancel
                 </button>
-                <button type="submit" className={styles.saveBtn}>
-                  {editingUser ? 'Save Changes' : 'Create User'}
+                <button type="submit" className={styles.saveBtn} disabled={saving}>
+                  {saving ? 'Saving...' : (editingUser ? 'Save Changes' : 'Create User')}
                 </button>
               </div>
             </form>

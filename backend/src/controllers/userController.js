@@ -87,9 +87,11 @@ export const createUser = async (req, res) => {
     });
 
     try {
-      await sendWelcomeEmail(user.email, user.name, tempPassword);
-    } catch (emailErr) {
-      console.error('Failed to send onboarding welcome email:', emailErr);
+      sendWelcomeEmail(user.email, user.name, tempPassword).catch((emailErr) => {
+        console.error('Failed to send onboarding welcome email:', emailErr);
+      });
+    } catch (err) {
+      console.error('Error initiating welcome email:', err);
     }
 
     res.status(201).json({
