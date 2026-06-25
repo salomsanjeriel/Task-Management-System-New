@@ -21,8 +21,11 @@ async function sendEmailWithRetry(mailOptions, retries = 3, delay = 1000) {
     console.log('---------------------------------------------------------');
     console.log(mailOptions.text);
     console.log('==========================================================\n');
+    console.log('NOTE: Real email was not sent because SMTP credentials (.env) were not loaded.');
     return { mock: true, recipient: mailOptions.to };
   }
+  
+  console.log(`[EMAIL DISPATCH] Preparing to send real email to: ${mailOptions.to} using ${process.env.SMTP_USER}`);
 
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
