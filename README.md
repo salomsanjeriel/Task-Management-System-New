@@ -14,6 +14,91 @@ A robust and real-time Task Management System designed to streamline team collab
 - **Secure Authentication:** JWT-based login with enforced password resets for newly created user accounts.
 - **File Uploads:** Upload and attach files/documents to projects and tasks.
 
+## 📊 Database Schema (ER Diagram)
+
+```mermaid
+erDiagram
+    User ||--o{ Project : "creates/manages"
+    User ||--o{ Task : "creates"
+    User ||--o{ TaskAssignment : "assigned to"
+    User ||--o{ Comment : "writes"
+    User ||--o{ Attachment : "uploads"
+    User ||--o{ Notification : "receives"
+    
+    Project ||--o{ Task : "contains"
+    
+    Task ||--o{ TaskAssignment : "has"
+    Task ||--o{ Comment : "has"
+    Task ||--o{ Attachment : "has"
+
+    User {
+        String id PK
+        String name
+        String email
+        String password_hash
+        Enum role
+        Boolean is_active
+        Boolean must_reset_password
+        DateTime created_at
+    }
+
+    Project {
+        String id PK
+        String name
+        String description
+        String manager_id FK
+        String status
+        DateTime created_at
+    }
+
+    Task {
+        String id PK
+        String title
+        String description
+        Enum status
+        Enum priority
+        DateTime due_date
+        String created_by FK
+        String project_id FK
+        DateTime created_at
+    }
+
+    TaskAssignment {
+        String id PK
+        String task_id FK
+        String user_id FK
+        DateTime assigned_at
+    }
+
+    Comment {
+        String id PK
+        String task_id FK
+        String user_id FK
+        String content
+        DateTime created_at
+    }
+
+    Notification {
+        String id PK
+        String user_id FK
+        String type
+        String message
+        Boolean is_read
+        DateTime created_at
+    }
+
+    Attachment {
+        String id PK
+        String task_id FK
+        String user_id FK
+        String file_name
+        String file_path
+        String file_type
+        Int file_size
+        DateTime created_at
+    }
+```
+
 ## 🛠️ Technology Stack
 
 ### Frontend
