@@ -1,12 +1,19 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import loginIllustration from '../../assets/login-illustration.png';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
+
+  if (isAuthenticated) {
+    if (user?.must_reset_password) {
+      return <Navigate to="/reset-password" replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

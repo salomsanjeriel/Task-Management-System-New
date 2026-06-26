@@ -102,6 +102,9 @@ export default function AppRoutes() {
         />
       </Route>
 
+      {/* Root Redirect */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
