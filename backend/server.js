@@ -6,6 +6,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { initSocket } from './src/sockets/socketHandler.js';
 import { startDeadlineChecker } from './src/utils/deadlineChecker.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs from './src/utils/swaggerConfig.js';
 
 dotenv.config();
 
@@ -65,6 +67,9 @@ app.use('/api/dashboard', dashboardRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'TMS Backend is running!' });
 });
+
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
