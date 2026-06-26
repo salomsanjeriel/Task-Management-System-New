@@ -210,3 +210,80 @@ If the SMTP credentials are not provided or invalid, the backend will fallback t
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+## 👥 Team Members & Contributions
+
+### IM/2023/038 – Member 1: Frontend Developer (UI/UX)
+**Responsibilities:**
+- Designed and developed the user interface using React.
+- Implemented the Login page, Admin Dashboard, Project Manager Dashboard, and Collaborator Dashboard.
+- Created responsive and user-friendly layouts using Tailwind CSS.
+- Integrated frontend components with backend APIs.
+
+**Technologies Used:**
+- React.js
+- Tailwind CSS
+- Axios
+
+---
+
+### IM/2023/014 – Member 2: Backend Developer (API & Business Logic)
+**Responsibilities:**
+- Developed the backend server using Node.js and Express.js.
+- Designed and implemented RESTful APIs.
+- Managed user roles (Admin, Project Manager, Collaborator).
+- Implemented task creation, updating, deletion, and retrieval functionalities.
+- Applied MVC architecture to organize the backend application.
+
+**Technologies Used:**
+- Node.js
+- Express.js
+- MVC Architecture
+- REST API
+
+---
+
+### IM/2023/117 – Member 3: Database & Security Specialist
+**Responsibilities:**
+- Designed and managed the PostgreSQL database schema.
+- Implemented database models using Prisma ORM.
+- Connected the backend with the database.
+- Implemented JWT-based authentication and authorization.
+- Secured user passwords using bcrypt hashing.
+- Ensured protection against SQL Injection using ORM.
+
+**Technologies Used:**
+- PostgreSQL
+- Prisma ORM
+- JWT Authentication
+- bcrypt
+
+---
+
+### IM/2023/119 – Member 4: Real-time Features & Frontend Integration
+**Responsibilities:**
+- Implemented real-time task updates using Socket.io.
+- Enabled instant synchronization of task changes between users.
+- Assisted in integrating frontend components with backend APIs.
+- Supported frontend functionality and user interaction improvements.
+
+**Technologies Used:**
+- Socket.io
+- React.js
+- Node.js
+
+---
+
+### IM/2023/100 – Member 5: Testing, Documentation & Deployment
+**Responsibilities:**
+- Performed system testing and debugging.
+- Verified API functionality and application workflows.
+- Prepared project documentation, including README and user guides.
+- Assisted in deployment and final integration of the system.
+- Supported overall project coordination and quality assurance.
+- deployed using AWS.
+
+**Technologies Used:**
+- Git & GitHub
+- Postman
+- VS Code
+- AWS
