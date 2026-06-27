@@ -80,14 +80,12 @@ erDiagram
     User ||--o{ Project : "creates/manages"
     User ||--o{ Task : "creates"
     User ||--o{ TaskAssignment : "assigned to"
-    User ||--o{ Comment : "writes"
     User ||--o{ Attachment : "uploads"
     User ||--o{ Notification : "receives"
     
     Project ||--o{ Task : "contains"
     
     Task ||--o{ TaskAssignment : "has"
-    Task ||--o{ Comment : "has"
     Task ||--o{ Attachment : "has"
 
     User {
@@ -230,7 +228,6 @@ The backend exposes a comprehensive RESTful API.
 | **Tasks** | `/api/tasks` | `POST` | Create a new task | Manager |
 | **Tasks** | `/api/tasks/:id/status` | `PATCH` | Update task status (Drag & drop) | Manager, Collaborator |
 | **Tasks** | `/api/tasks/:id/assign` | `POST` | Assign a user to a task | Manager |
-
 | **Files** | `/api/tasks/:id/attachments`| `POST` | Upload a file (`multipart/form-data`) | All Authenticated |
 | **Notifs** | `/api/notifications` | `GET` | Get user notifications | All Authenticated |
 | **Dashboard**| `/api/dashboard/stats` | `GET` | Get aggregate KPI metrics | All Authenticated |
