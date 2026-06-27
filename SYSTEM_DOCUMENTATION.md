@@ -129,14 +129,7 @@ erDiagram
         DateTime assigned_at
     }
 
-    Comment {
-        String id PK
-        String task_id FK
-        String user_id FK
-        String content
-        DateTime created_at
-    }
-
+   
     Notification {
         String id PK
         String user_id FK
@@ -237,7 +230,7 @@ The backend exposes a comprehensive RESTful API.
 | **Tasks** | `/api/tasks` | `POST` | Create a new task | Manager |
 | **Tasks** | `/api/tasks/:id/status` | `PATCH` | Update task status (Drag & drop) | Manager, Collaborator |
 | **Tasks** | `/api/tasks/:id/assign` | `POST` | Assign a user to a task | Manager |
-| **Comments** | `/api/tasks/:id/comments` | `POST` | Post a comment on a task | All Authenticated |
+
 | **Files** | `/api/tasks/:id/attachments`| `POST` | Upload a file (`multipart/form-data`) | All Authenticated |
 | **Notifs** | `/api/notifications` | `GET` | Get user notifications | All Authenticated |
 | **Dashboard**| `/api/dashboard/stats` | `GET` | Get aggregate KPI metrics | All Authenticated |
