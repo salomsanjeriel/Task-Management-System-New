@@ -21,14 +21,12 @@ erDiagram
     User ||--o{ Project : "creates/manages"
     User ||--o{ Task : "creates"
     User ||--o{ TaskAssignment : "assigned to"
-    User ||--o{ Comment : "writes"
     User ||--o{ Attachment : "uploads"
     User ||--o{ Notification : "receives"
     
     Project ||--o{ Task : "contains"
     
     Task ||--o{ TaskAssignment : "has"
-    Task ||--o{ Comment : "has"
     Task ||--o{ Attachment : "has"
 
     User {
@@ -70,13 +68,7 @@ erDiagram
         DateTime assigned_at
     }
 
-    Comment {
-        String id PK
-        String task_id FK
-        String user_id FK
-        String content
-        DateTime created_at
-    }
+    
 
     Notification {
         String id PK
